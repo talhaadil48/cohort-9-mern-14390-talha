@@ -31,8 +31,8 @@ const registerValidation = [
   body("password")
     .notEmpty()
     .withMessage("Password is required")
-    .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters long"),
+    .isLength({ min: 8, max: 72 })
+    .withMessage("Password must be between 8 and 72 characters long"),
   body("full_name")
     .optional()
     .trim()

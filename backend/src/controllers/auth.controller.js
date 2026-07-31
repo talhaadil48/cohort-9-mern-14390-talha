@@ -24,12 +24,25 @@ const register = async (req, res) => {
     }
 
     const password_hash = await hashPassword(password);
-    const user = await userModel.createUser({
-      username,
-      email,
-      password_hash,
-      full_name,
-    });
+    
+    let user;
+    try {
+      user = await userModel.createUser({
+        username,
+        email,
+        password_hash,
+        full_name,
+      });
+    } catch (dbErr) {
+      // Handle Postgres unique constraint violation (23505) in race conditions
+      if (dbErr.code === "23505") {
+        return res.status(400).json({
+          success: false,
+          message: "Username or email is already in use.",
+        });
+      }
+      throw dbErr;
+    }
 
     const tokens = generateTokens(user);
 
@@ -67,10 +80,11 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { login, password } = req.body;
+    const loginNormalized = login.trim();
 
-    let user = await userModel.findUserByEmail(login);
+    let user = await userModel.findUserByEmail(loginNormalized);
     if (!user) {
-      user = await userModel.findUserByUsername(login);
+      user = await userModel.findUserByUsername(loginNormalized);
     }
 
     if (!user) {
@@ -145,7 +159,7 @@ const refresh = async (req, res) => {
     }
 
     const session = await sessionModel.findSessionByRefreshToken(refreshToken);
-    if (!session || new Date(session.expires_at) < new Date()) {
+    if (!session || session.is_revoked || new Date(session.expires_at) < new Date()) {
       return res.status(401).json({
         success: false,
         message: "Session expired or revoked.",
