@@ -1,6 +1,5 @@
 const { verifyAccessToken } = require("../utils/jwt");
 const userModel = require("../models/user.model");
-const sessionModel = require("../models/session.model");
 
 const authenticateToken = async (req, res, next) => {
   try {
@@ -23,15 +22,7 @@ const authenticateToken = async (req, res, next) => {
       });
     }
 
-    // Verify session is active and not revoked in database
-    const session = await sessionModel.findSessionByToken(token);
-    if (!session || session.is_revoked || new Date(session.expires_at) < new Date()) {
-      return res.status(401).json({
-        success: false,
-        message: "Session has been revoked or expired. Please log in again.",
-      });
-    }
-
+    // JWT signature is valid — check user still exists and is active
     const user = await userModel.findUserById(decoded.id);
     if (!user || !user.is_active) {
       return res.status(401).json({

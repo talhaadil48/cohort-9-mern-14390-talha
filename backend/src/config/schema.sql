@@ -66,18 +66,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- =============================================
--- SESSIONS TABLE
--- =============================================
-CREATE TABLE IF NOT EXISTS sessions (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    token VARCHAR(500) NOT NULL UNIQUE,
-    refresh_token VARCHAR(500) NOT NULL UNIQUE,
-    expires_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    is_revoked BOOLEAN DEFAULT FALSE
-);
+
 
 -- =============================================
 -- INDEXES
@@ -85,8 +74,6 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE INDEX IF NOT EXISTS idx_notes_user_id ON notes(user_id);
 CREATE INDEX IF NOT EXISTS idx_notes_deleted_at ON notes(deleted_at);
 CREATE INDEX IF NOT EXISTS idx_notes_updated ON notes(user_id, updated_at DESC);
-CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
-CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_user_created ON audit_logs(user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_tags_user_id ON tags(user_id);
 

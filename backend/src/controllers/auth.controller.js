@@ -1,5 +1,4 @@
 const userModel = require("../models/user.model");
-const sessionModel = require("../models/session.model");
 const { hashPassword, comparePassword } = require("../utils/password");
 const { generateTokens, verifyRefreshToken } = require("../utils/jwt");
 
@@ -24,7 +23,7 @@ const register = async (req, res) => {
     }
 
     const password_hash = await hashPassword(password);
-    
+
     let user;
     try {
       user = await userModel.createUser({
@@ -45,16 +44,6 @@ const register = async (req, res) => {
     }
 
     const tokens = generateTokens(user);
-
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await sessionModel.createSession({
-      user_id: user.id,
-      token: tokens.accessToken,
-      refresh_token: tokens.refreshToken,
-      expires_at: expiresAt,
-    });
 
     res.status(201).json({
       success: true,
@@ -113,16 +102,6 @@ const login = async (req, res) => {
 
     const tokens = generateTokens(user);
 
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await sessionModel.createSession({
-      user_id: user.id,
-      token: tokens.accessToken,
-      refresh_token: tokens.refreshToken,
-      expires_at: expiresAt,
-    });
-
     res.json({
       success: true,
       message: "Login successful",
@@ -158,14 +137,6 @@ const refresh = async (req, res) => {
       });
     }
 
-    const session = await sessionModel.findSessionByRefreshToken(refreshToken);
-    if (!session || session.is_revoked || new Date(session.expires_at) < new Date()) {
-      return res.status(401).json({
-        success: false,
-        message: "Session expired or revoked.",
-      });
-    }
-
     const user = await userModel.findUserById(decoded.id);
     if (!user || !user.is_active) {
       return res.status(401).json({
@@ -175,18 +146,6 @@ const refresh = async (req, res) => {
     }
 
     const tokens = generateTokens(user);
-
-    await sessionModel.revokeSessionByRefreshToken(refreshToken);
-
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await sessionModel.createSession({
-      user_id: user.id,
-      token: tokens.accessToken,
-      refresh_token: tokens.refreshToken,
-      expires_at: expiresAt,
-    });
 
     res.json({
       success: true,
@@ -204,17 +163,8 @@ const refresh = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    const token = req.token;
-    const { refreshToken } = req.body;
-
-    if (token) {
-      await sessionModel.revokeSessionByToken(token);
-    }
-
-    if (refreshToken) {
-      await sessionModel.revokeSessionByRefreshToken(refreshToken);
-    }
-
+    // Stateless JWT: logout is handled client-side by discarding the tokens.
+    // No server-side session to revoke.
     res.json({
       success: true,
       message: "Logged out successfully",

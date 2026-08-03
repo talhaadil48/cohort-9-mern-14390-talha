@@ -12,7 +12,7 @@ const {
  * @swagger
  * tags:
  *   name: Auth
- *   description: User registration, login, token refresh, and session management
+ *   description: User registration, login, token refresh, and JWT-based authentication
  */
 
 /**
@@ -124,20 +124,14 @@ router.post("/refresh", refreshValidation, authController.refresh);
  * @swagger
  * /api/auth/logout:
  *   post:
- *     summary: Logout user and revoke active session
+ *     summary: Logout user (stateless — client must discard tokens)
+ *     description: |
+ *       Since JWT is stateless, the server does not store sessions.
+ *       Logout is achieved by the client discarding its access and refresh tokens.
+ *       This endpoint exists as a standard REST endpoint to signal logout intent.
  *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: false
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               refreshToken:
- *                 type: string
- *                 example: eyJhbGciOiJIUzI1Ni...
  *     responses:
  *       200:
  *         description: Logged out successfully
