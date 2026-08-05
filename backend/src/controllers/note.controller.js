@@ -43,12 +43,12 @@ const getNoteById = async (req, res) => {
         const { note_id } = req.params;
         const user_id = req.user.id;
         const note = await noteModel.getNotesById(note_id, user_id);
-        if (!note) {    
-        return res.status(404).json({
+        if (!note) {
+            return res.status(404).json({
                 success: false,
                 message: "Note not found"
             });
-        }      
+        }
         else {
             res.status(200).json({
                 success: true,
@@ -70,14 +70,23 @@ const updateNote = async (req, res) => {
     try {
         const { note_id } = req.params;
         const user_id = req.user.id;
-        const { title, content, content_rich, color } = req.body;   
-        const updatedNote = await noteModel.updateNote(note_id, user_id, { title, content, content_rich, color });
+        const { title, content, content_rich, color } = req.body;
+        const note = await noteModel.getNotesById(note_id, user_id);
 
-        res.status(200).json({
-            success: true,
-            message: "Note updated successfully",
-            data: updatedNote
-        });
+        if (!note) {
+            return res.status(404).json({
+                success: false,
+                message: "Note not found"
+            });
+        } else {
+            const updatedNote = await noteModel.updateNote(note_id, user_id, { title, content, content_rich, color });
+
+            res.status(200).json({
+                success: true,
+                message: "Note updated successfully",
+                data: updatedNote
+            });
+        }
     } catch (error) {
         console.error("Error updating note:", error);
         res.status(500).json({
@@ -94,11 +103,11 @@ const softDeleteNote = async (req, res) => {
         const note = await noteModel.getNotesById(note_id, user_id);
 
         if (!note) {
-            return res.status(404).json({   
+            return res.status(404).json({
                 success: false,
                 message: "Note not found"
             });
-        }else {
+        } else {
             const deletedNote = await noteModel.softDeleteNote(note_id, user_id);
             return res.status(200).json({
                 success: true,
@@ -111,7 +120,8 @@ const softDeleteNote = async (req, res) => {
             success: false,
             message: "Internal server error"
         });
-    }}
+    }
+}
 
 
 const changeArchiveStatus = async (req, res) => {
@@ -187,7 +197,7 @@ const changePinnedStatus = async (req, res) => {
 };
 
 
-const restoreNote = async (req, res) => {   
+const restoreNote = async (req, res) => {
     try {
         const { note_id } = req.params;
         const user_id = req.user.id;
@@ -236,4 +246,4 @@ const emptyRecycledNotes = async (req, res) => {
     }
 };
 
-module.exports = { createNote, getAllNotes, getNoteById, updateNote, softDeleteNote, changeArchiveStatus , changePinnedStatus , restoreNote ,emptyRecycledNotes};
+module.exports = { createNote, getAllNotes, getNoteById, updateNote, softDeleteNote, changeArchiveStatus, changePinnedStatus, restoreNote, emptyRecycledNotes };

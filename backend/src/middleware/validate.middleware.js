@@ -77,12 +77,12 @@ const noteValidation = [
   body("color")
     .optional()
     .trim()
-    .isLength({ max: 7 })
-    .withMessage("Color cannot exceed 7 characters"),
+    .matches(/^#([A-Fa-f0-9]{6})$/)
+    .withMessage("Color must be a valid hex color (e.g. #FFFFFF)"),
   handleValidationErrors,
 ];
 
-const noteUpdateValidation = [  
+const noteUpdateValidation = [
   body("title")
     .optional()
     .trim()
@@ -99,8 +99,8 @@ const noteUpdateValidation = [
   body("color")
     .optional()
     .trim()
-    .isLength({ max: 7 })
-    .withMessage("Color cannot exceed 7 characters"),
+    .matches(/^#([A-Fa-f0-9]{6})$/)
+    .withMessage("Color must be a valid hex color (e.g. #FFFFFF)"),
   handleValidationErrors,
 ];
 
@@ -123,12 +123,20 @@ const pinnedStatusValidation = [
 ];
 
 
+const noteIdValidation = [
+  param("note_id")
+    .isInt({ min: 1 })
+    .withMessage("note_id must be a positive integer"),
+  handleValidationErrors,
+];
+
 module.exports = {
   registerValidation,
   loginValidation,
   refreshValidation,
   pinnedStatusValidation,
-  archiveStatusValidation,  
+  archiveStatusValidation,
   noteValidation,
   noteUpdateValidation,
+  noteIdValidation,
 };

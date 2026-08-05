@@ -8,7 +8,8 @@ const {
     noteValidation,
     noteUpdateValidation,
     archiveStatusValidation,
-    pinnedStatusValidation
+    pinnedStatusValidation,
+    noteIdValidation
 } = require("../middleware/validate.middleware");
 
 
@@ -75,7 +76,7 @@ router.post("/", authenticateToken, noteValidation, noteController.createNote);
  *       500:
  *         description: Server error
  */
-router.get("/", authenticateToken, noteController.getAllNotes);
+router.get("/", authenticateToken,noteIdValidation ,noteController.getAllNotes);
 
 
 /**
@@ -101,7 +102,7 @@ router.get("/", authenticateToken, noteController.getAllNotes);
  *       500:
  *         description: Server error
  */
-router.get("/:note_id", authenticateToken, noteController.getNoteById);
+router.get("/:note_id", authenticateToken, noteIdValidation, noteController.getNoteById);
 
 
 /**
@@ -148,7 +149,7 @@ router.get("/:note_id", authenticateToken, noteController.getNoteById);
  *       500:
  *         description: Server error
  */
-router.put("/:note_id", authenticateToken, noteUpdateValidation, noteController.updateNote);
+router.put("/:note_id", authenticateToken, noteIdValidation, noteUpdateValidation, noteController.updateNote);
 
 
 /**
@@ -174,7 +175,7 @@ router.put("/:note_id", authenticateToken, noteUpdateValidation, noteController.
  *       500:
  *         description: Server error
  */
-router.delete("/:note_id", authenticateToken, noteController.softDeleteNote);
+router.delete("/:note_id", authenticateToken, noteIdValidation, noteController.softDeleteNote);
 
 
 
@@ -201,7 +202,7 @@ router.delete("/:note_id", authenticateToken, noteController.softDeleteNote);
  *       500:
  *         description: Server error
  */
-router.put("/:note_id/restore", authenticateToken, noteController.restoreNote);
+router.put("/:note_id/restore", authenticateToken, noteIdValidation, noteController.restoreNote);
 
 
 
@@ -247,6 +248,7 @@ router.put(
     "/:note_id/archive",
     authenticateToken,
     archiveStatusValidation,
+    noteIdValidation,
     noteController.changeArchiveStatus
 );
 
@@ -292,6 +294,7 @@ router.put(
     "/:note_id/pinned",
     authenticateToken,
     pinnedStatusValidation,
+    noteIdValidation,
     noteController.changePinnedStatus
 );
 
