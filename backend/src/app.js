@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const authRoutes = require("./routes/auth.routes");
+const noteRoutes = require("./routes/note.route");
 const setupSwagger = require("./config/swagger");
 
 const app = express();
@@ -13,6 +14,7 @@ setupSwagger(app);
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/notes", noteRoutes);
 
 app.get("/", (req, res) => {
     res.json({
@@ -23,3 +25,6 @@ app.get("/", (req, res) => {
 });
 
 module.exports = app;
+
+
+

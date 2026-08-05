@@ -59,8 +59,76 @@ const refreshValidation = [
   handleValidationErrors,
 ];
 
+const noteValidation = [
+  body("title")
+    .trim()
+    .notEmpty()
+    .withMessage("Title is required")
+    .isLength({ max: 255 })
+    .withMessage("Title cannot exceed 255 characters"),
+  body("content")
+    .optional()
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage("Content cannot exceed 1000 characters"),
+  body("content_rich")
+    .optional()
+    .trim(),
+  body("color")
+    .optional()
+    .trim()
+    .isLength({ max: 7 })
+    .withMessage("Color cannot exceed 7 characters"),
+  handleValidationErrors,
+];
+
+const noteUpdateValidation = [  
+  body("title")
+    .optional()
+    .trim()
+    .isLength({ max: 255 })
+    .withMessage("Title cannot exceed 255 characters"),
+  body("content")
+    .optional()
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage("Content cannot exceed 1000 characters"),
+  body("content_rich")
+    .optional()
+    .trim(),
+  body("color")
+    .optional()
+    .trim()
+    .isLength({ max: 7 })
+    .withMessage("Color cannot exceed 7 characters"),
+  handleValidationErrors,
+];
+
+const archiveStatusValidation = [
+  body("is_archived")
+    .notEmpty()
+    .withMessage("is_archived field is required")
+    .isBoolean()
+    .withMessage("is_archived must be a boolean value"),
+  handleValidationErrors,
+];
+
+const pinnedStatusValidation = [
+  body("is_pinned")
+    .notEmpty()
+    .withMessage("is_pinned field is required")
+    .isBoolean()
+    .withMessage("is_pinned must be a boolean value"),
+  handleValidationErrors,
+];
+
+
 module.exports = {
   registerValidation,
   loginValidation,
   refreshValidation,
+  pinnedStatusValidation,
+  archiveStatusValidation,  
+  noteValidation,
+  noteUpdateValidation,
 };
