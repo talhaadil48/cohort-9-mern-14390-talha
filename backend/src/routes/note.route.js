@@ -181,9 +181,9 @@ router.delete("/:note_id", authenticateToken, noteIdValidation, noteController.s
 
 /**
  * @swagger
- * /api/notes/{note_id}:
- *   restore:
- *     summary: Soft delete a note by ID
+ * /api/notes/{note_id}/restore:
+ *   put:
+ *     summary: Restore a soft-deleted note by ID
  *     tags: [Note]
  *     security:
  *       - bearerAuth: []
@@ -196,7 +196,7 @@ router.delete("/:note_id", authenticateToken, noteIdValidation, noteController.s
  *         description: Note ID
  *     responses:
  *       200:
- *         description: Note soft deleted successfully
+ *         description: Note restored   successfully
  *       404:
  *         description: Note not found
  *       500:
