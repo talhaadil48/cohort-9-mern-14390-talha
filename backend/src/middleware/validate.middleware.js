@@ -59,8 +59,84 @@ const refreshValidation = [
   handleValidationErrors,
 ];
 
+const noteValidation = [
+  body("title")
+    .trim()
+    .notEmpty()
+    .withMessage("Title is required")
+    .isLength({ max: 255 })
+    .withMessage("Title cannot exceed 255 characters"),
+  body("content")
+    .optional()
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage("Content cannot exceed 1000 characters"),
+  body("content_rich")
+    .optional()
+    .trim(),
+  body("color")
+    .optional()
+    .trim()
+    .matches(/^#([A-Fa-f0-9]{6})$/)
+    .withMessage("Color must be a valid hex color (e.g. #FFFFFF)"),
+  handleValidationErrors,
+];
+
+const noteUpdateValidation = [
+  body("title")
+    .optional()
+    .trim()
+    .isLength({ max: 255 })
+    .withMessage("Title cannot exceed 255 characters"),
+  body("content")
+    .optional()
+    .trim()
+    .isLength({ max: 1000 })
+    .withMessage("Content cannot exceed 1000 characters"),
+  body("content_rich")
+    .optional()
+    .trim(),
+  body("color")
+    .optional()
+    .trim()
+    .matches(/^#([A-Fa-f0-9]{6})$/)
+    .withMessage("Color must be a valid hex color (e.g. #FFFFFF)"),
+  handleValidationErrors,
+];
+
+const archiveStatusValidation = [
+  body("is_archived")
+    .notEmpty()
+    .withMessage("is_archived field is required")
+    .isBoolean()
+    .withMessage("is_archived must be a boolean value"),
+  handleValidationErrors,
+];
+
+const pinnedStatusValidation = [
+  body("is_pinned")
+    .notEmpty()
+    .withMessage("is_pinned field is required")
+    .isBoolean()
+    .withMessage("is_pinned must be a boolean value"),
+  handleValidationErrors,
+];
+
+
+const noteIdValidation = [
+  param("note_id")
+    .isInt({ min: 1 })
+    .withMessage("note_id must be a positive integer"),
+  handleValidationErrors,
+];
+
 module.exports = {
   registerValidation,
   loginValidation,
   refreshValidation,
+  pinnedStatusValidation,
+  archiveStatusValidation,
+  noteValidation,
+  noteUpdateValidation,
+  noteIdValidation,
 };
