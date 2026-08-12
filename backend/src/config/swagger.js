@@ -1,5 +1,6 @@
 const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const logger = require("../utils/logger");
 
 const options = {
   definition: {
@@ -37,7 +38,7 @@ const setupSwagger = (app) => {
     res.setHeader("Content-Type", "application/json");
     res.send(swaggerSpec);
   });
-  console.log("Swagger UI available at http://localhost:5000/api/docs");
+  logger.info("Swagger UI available at http://localhost:5000/api/docs");
 };
 
 module.exports = setupSwagger;

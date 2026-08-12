@@ -1,5 +1,5 @@
 require("dotenv").config();
-
+const logger = require("./utils/logger");
 const app = require("./app");
 const { initDb } = require("./config/db");
 const env = require("./config/env");
@@ -14,12 +14,12 @@ const startServer = async () => {
   try {
     await initDb();
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      logger.info(`Server running on port ${PORT}`);
     });
   } catch (error) {
-    console.error("Failed to start server due to database initialization error:", error);
+    logger.error({ err: error }, "Failed to start server due to database initialization error");
     process.exit(1);
   }
 };
 
-startServer();
+startServer();

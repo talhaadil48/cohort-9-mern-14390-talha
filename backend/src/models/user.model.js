@@ -1,4 +1,5 @@
 const db = require("../config/db");
+const logger = require("../utils/logger");
 
 const createUser = async ({ username, email, password_hash, full_name }) => {
   try {
@@ -10,7 +11,7 @@ const createUser = async ({ username, email, password_hash, full_name }) => {
     );
     return result.rows[0];
   } catch (error) {
-    console.error("Error in createUser:", error.message);
+    logger.error({ err: error }, "Error in createUser");
     throw error;
   }
 };
@@ -23,7 +24,7 @@ const findUserByEmail = async (email) => {
     );
     return result.rows[0];
   } catch (error) {
-    console.error("Error in findUserByEmail:", error.message);
+    logger.error({ err: error }, "Error in findUserByEmail");
     throw error;
   }
 };
@@ -36,7 +37,7 @@ const findUserByUsername = async (username) => {
     );
     return result.rows[0];
   } catch (error) {
-    console.error("Error in findUserByUsername:", error.message);
+    logger.error({ err: error }, "Error in findUserByUsername");
     throw error;
   }
 };
@@ -50,7 +51,7 @@ const findUserById = async (id) => {
     );
     return result.rows[0];
   } catch (error) {
-    console.error("Error in findUserById:", error.message);
+    logger.error({ err: error }, "Error in findUserById");
     throw error;
   }
 };
@@ -63,7 +64,7 @@ const updateLastLogin = async (id) => {
     );
     return result.rows[0];
   } catch (error) {
-    console.error("Error in updateLastLogin:", error.message);
+    logger.error({ err: error }, "Error in updateLastLogin");
     throw error;
   }
 };
