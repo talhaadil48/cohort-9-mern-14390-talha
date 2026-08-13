@@ -1,5 +1,6 @@
-const { verifyAccessToken } = require("../utils/jwt");
+const jwtUtils = require("../utils/jwt");
 const userModel = require("../models/user.model");
+const logger = require("../utils/logger");
 
 const authenticateToken = async (req, res, next) => {
   try {
@@ -14,7 +15,7 @@ const authenticateToken = async (req, res, next) => {
     const token = authHeader.split(" ")[1];
     let decoded;
     try {
-      decoded = verifyAccessToken(token);
+      decoded = jwtUtils.verifyAccessToken(token);
     } catch (err) {
       return res.status(401).json({
         success: false,
@@ -35,7 +36,7 @@ const authenticateToken = async (req, res, next) => {
     req.token = token;
     next();
   } catch (error) {
-    console.error("Auth middleware error:", error);
+    logger.error({ err: error }, "Auth middleware error");
     return res.status(500).json({
       success: false,
       message: "Internal server error during authentication.",

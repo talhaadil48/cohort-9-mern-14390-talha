@@ -1,6 +1,8 @@
 const userModel = require("../models/user.model");
-const { hashPassword, comparePassword } = require("../utils/password");
-const { generateTokens, verifyRefreshToken } = require("../utils/jwt");
+const logger = require("../utils/logger");
+const passwordUtils = require("../utils/password");
+const jwtUtils = require("../utils/jwt");
+
 
 const register = async (req, res) => {
   try {
@@ -22,7 +24,7 @@ const register = async (req, res) => {
       });
     }
 
-    const password_hash = await hashPassword(password);
+    const password_hash = await passwordUtils.hashPassword(password);
 
     let user;
     try {
@@ -43,7 +45,7 @@ const register = async (req, res) => {
       throw dbErr;
     }
 
-    const tokens = generateTokens(user);
+    const tokens = jwtUtils.generateTokens(user);
 
     res.status(201).json({
       success: true,
@@ -58,7 +60,7 @@ const register = async (req, res) => {
       tokens,
     });
   } catch (error) {
-    console.error("Register error:", error);
+    logger.error({ err: error }, "Register error");
     res.status(500).json({
       success: false,
       message: "An error occurred during registration.",
@@ -90,7 +92,7 @@ const login = async (req, res) => {
       });
     }
 
-    const isMatch = await comparePassword(password, user.password_hash);
+    const isMatch = await passwordUtils.comparePassword(password, user.password_hash);
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -100,7 +102,7 @@ const login = async (req, res) => {
 
     await userModel.updateLastLogin(user.id);
 
-    const tokens = generateTokens(user);
+    const tokens = jwtUtils.generateTokens(user);
 
     res.json({
       success: true,
@@ -115,7 +117,7 @@ const login = async (req, res) => {
       tokens,
     });
   } catch (error) {
-    console.error("Login error:", error);
+    logger.error({ err: error }, "Login error");
     res.status(500).json({
       success: false,
       message: "An error occurred during login.",
@@ -129,7 +131,7 @@ const refresh = async (req, res) => {
 
     let decoded;
     try {
-      decoded = verifyRefreshToken(refreshToken);
+      decoded = jwtUtils.verifyRefreshToken(refreshToken);
     } catch (err) {
       return res.status(401).json({
         success: false,
@@ -145,7 +147,7 @@ const refresh = async (req, res) => {
       });
     }
 
-    const tokens = generateTokens(user);
+    const tokens = jwtUtils.generateTokens(user);
 
     res.json({
       success: true,
@@ -153,7 +155,7 @@ const refresh = async (req, res) => {
       tokens,
     });
   } catch (error) {
-    console.error("Refresh token error:", error);
+    logger.error({ err: error }, "Refresh token error");
     res.status(500).json({
       success: false,
       message: "An error occurred while refreshing token.",
@@ -170,7 +172,7 @@ const logout = async (req, res) => {
       message: "Logged out successfully",
     });
   } catch (error) {
-    console.error("Logout error:", error);
+    logger.error({ err: error }, "Logout error");
     res.status(500).json({
       success: false,
       message: "An error occurred during logout.",
@@ -185,7 +187,7 @@ const getMe = async (req, res) => {
       user: req.user,
     });
   } catch (error) {
-    console.error("GetMe error:", error);
+    logger.error({ err: error }, "GetMe error");
     res.status(500).json({
       success: false,
       message: "An error occurred while fetching user profile.",
