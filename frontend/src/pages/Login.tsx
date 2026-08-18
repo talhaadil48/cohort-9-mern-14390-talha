@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 import Cookies from "js-cookie";
 import api from "../lib/axios";
 import "../styles/auth.css";
@@ -37,8 +38,12 @@ export default function Login() {
       setTimeout(() => {
         navigate("/dashboard");
       }, 500);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid email or password.");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Invalid email or password.");
+      } else {
+        setError("Invalid email or password.");
+      }
     } finally {
       setLoading(false);
     }

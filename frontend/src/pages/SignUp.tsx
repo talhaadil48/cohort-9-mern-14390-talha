@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 import Cookies from "js-cookie";
 import api from "../lib/axios";
 import "../styles/auth.css";
@@ -43,8 +44,12 @@ export default function SignUp() {
       setTimeout(() => {
         navigate("/dashboard");
       }, 500);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed. Please try again.");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Registration failed. Please try again.");
+      } else {
+        setError("Registration failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
