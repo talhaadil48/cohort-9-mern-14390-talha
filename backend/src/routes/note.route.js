@@ -76,7 +76,7 @@ router.post("/", authenticateToken, noteValidation, noteController.createNote);
  *       500:
  *         description: Server error
  */
-router.get("/", authenticateToken,noteIdValidation ,noteController.getAllNotes);
+router.get("/", authenticateToken, noteController.getAllNotes);
 
 
 /**
