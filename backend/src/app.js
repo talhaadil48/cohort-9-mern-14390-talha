@@ -1,10 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const authRoutes = require("./routes/auth.routes");
-const noteRoutes = require("./routes/note.route");
+const noteRoutes = require("./routes/note.routes");
 const setupSwagger = require("./config/swagger");
 const pinoHttp = require("pino-http");
 const logger = require("./utils/logger");
+
 
 
 const app = express();
@@ -47,7 +48,7 @@ app.use(
   })
 );
 
-
+    
 app.use((req, res, next) => {
     const originalJson = res.json.bind(res);
     res.json = (body) => {
@@ -60,13 +61,11 @@ app.use((req, res, next) => {
 app.use(cors());
 app.use(express.json());
 
-// Setup Swagger Docs
 setupSwagger(app);
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", noteRoutes);
-
 app.get("/", (req, res) => {
     res.json({
         message: "Backend API running with PostgreSQL & JWT Auth",
@@ -76,6 +75,3 @@ app.get("/", (req, res) => {
 });
 
 module.exports = app;
-
-
-
