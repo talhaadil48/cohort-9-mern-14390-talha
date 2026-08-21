@@ -17,4 +17,4 @@ if (process.env.NODE_ENV !== "production") {
 
 const logger = pino(options);
 
-module.exports = logger;
+module.exports = logger;    
