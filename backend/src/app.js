@@ -8,6 +8,8 @@ const logger = require("./utils/logger");
 
 
 
+const { errorHandler, notFoundHandler } = require("./middleware/error.middleware");
+
 const app = express();
 app.use(
   pinoHttp({
@@ -73,5 +75,9 @@ app.get("/", (req, res) => {
         status: "OK"
     });
 });
+
+// Global Error Handling Middleware
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 module.exports = app;
