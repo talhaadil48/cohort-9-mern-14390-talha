@@ -1,7 +1,7 @@
 const noteModel = require("../models/note.model");
+const logger = require("../utils/logger");
 
-
-const createNote = async (req, res) => {
+const createNote = async (req, res, next) => {
     try {
         const { title, content, content_rich, color } = req.body;
         const user_id = req.user.id;
@@ -12,15 +12,12 @@ const createNote = async (req, res) => {
             data: newNote
         });
     } catch (error) {
-        console.error("Error creating note:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+        logger.error({ err: error }, "Error creating note");
+        next(error);
     }
 };
 
-const getAllNotes = async (req, res) => {
+const getAllNotes = async (req, res, next) => {
     try {
         const user_id = req.user.id;
         const notes = await noteModel.getAllNotes(user_id);
@@ -30,15 +27,12 @@ const getAllNotes = async (req, res) => {
             data: notes
         });
     } catch (error) {
-        console.error("Error retrieving notes:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+        logger.error({ err: error }, "Error retrieving notes");
+        next(error);
     }
-}
+};
 
-const getNoteById = async (req, res) => {
+const getNoteById = async (req, res, next) => {
     try {
         const { note_id } = req.params;
         const user_id = req.user.id;
@@ -48,8 +42,7 @@ const getNoteById = async (req, res) => {
                 success: false,
                 message: "Note not found"
             });
-        }
-        else {
+        } else {
             res.status(200).json({
                 success: true,
                 message: "Note retrieved successfully",
@@ -57,16 +50,12 @@ const getNoteById = async (req, res) => {
             });
         }
     } catch (error) {
-        console.error("Error retrieving note:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+        logger.error({ err: error }, "Error retrieving note");
+        next(error);
     }
-}
+};
 
-
-const updateNote = async (req, res) => {
+const updateNote = async (req, res, next) => {
     try {
         const { note_id } = req.params;
         const user_id = req.user.id;
@@ -88,15 +77,12 @@ const updateNote = async (req, res) => {
             });
         }
     } catch (error) {
-        console.error("Error updating note:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+        logger.error({ err: error }, "Error updating note");
+        next(error);
     }
 };
 
-const softDeleteNote = async (req, res) => {
+const softDeleteNote = async (req, res, next) => {
     try {
         const { note_id } = req.params;
         const user_id = req.user.id;
@@ -108,23 +94,19 @@ const softDeleteNote = async (req, res) => {
                 message: "Note not found"
             });
         } else {
-            const deletedNote = await noteModel.softDeleteNote(note_id, user_id);
+            await noteModel.softDeleteNote(note_id, user_id);
             return res.status(200).json({
                 success: true,
                 message: "Note deleted successfully"
             });
         }
     } catch (error) {
-        console.error("Error deleting note:", error);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+        logger.error({ err: error }, "Error deleting note");
+        next(error);
     }
-}
+};
 
-
-const changeArchiveStatus = async (req, res) => {
+const changeArchiveStatus = async (req, res, next) => {
     try {
         const { note_id } = req.params;
         const user_id = req.user.id;
@@ -152,15 +134,12 @@ const changeArchiveStatus = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error updating note archive status:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+        logger.error({ err: error }, "Error updating note archive status");
+        next(error);
     }
 };
 
-const changePinnedStatus = async (req, res) => {
+const changePinnedStatus = async (req, res, next) => {
     try {
         const { note_id } = req.params;
         const user_id = req.user.id;
@@ -188,16 +167,12 @@ const changePinnedStatus = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error updating note pinned status:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+        logger.error({ err: error }, "Error updating note pinned status");
+        next(error);
     }
 };
 
-
-const restoreNote = async (req, res) => {
+const restoreNote = async (req, res, next) => {
     try {
         const { note_id } = req.params;
         const user_id = req.user.id;
@@ -220,16 +195,12 @@ const restoreNote = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error restoring note:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+        logger.error({ err: error }, "Error restoring note");
+        next(error);
     }
 };
 
-
-const emptyRecycledNotes = async (req, res) => {
+const emptyRecycledNotes = async (req, res, next) => {
     try {
         const user_id = req.user.id;
         await noteModel.emptyRecycledNotes(user_id);
@@ -238,11 +209,8 @@ const emptyRecycledNotes = async (req, res) => {
             message: "Recycled notes emptied successfully"
         });
     } catch (error) {
-        console.error("Error emptying recycled notes:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
+        logger.error({ err: error }, "Error emptying recycled notes");
+        next(error);
     }
 };
 
